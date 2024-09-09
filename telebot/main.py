@@ -2,9 +2,7 @@ import asyncio
 import logging
 import sys
 
-from handlers import (buttons_for_choice, cmd_buttons_choice, cmd_start,
-                      cmd_start_project, cmd_start_project2, cmd_test,
-                      cms_buttons_choice2, menu_for_instruction)
+from handlers import cmd_start, menu_for_instruction
 from loader import bot, dp
 
 
@@ -15,12 +13,6 @@ async def main() -> None:
     """
     dp.message.register(cmd_start)
     dp.message.register(menu_for_instruction)
-    dp.message.register(cmd_test)
-    dp.message.register(cmd_start_project)
-    dp.message.register(cmd_buttons_choice)
-    dp.message.register(cms_buttons_choice2)
-    dp.message.register(buttons_for_choice)
-    dp.message.register(cmd_start_project2)
 
     await dp.start_polling(bot)
 
