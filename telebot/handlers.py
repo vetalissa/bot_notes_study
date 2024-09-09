@@ -9,7 +9,6 @@ from aiogram.utils.markdown import hbold
 
 from loader import dp
 
-
 #  '<blockquote>Цитата</blockquote>'
 # '<b>(жирный)</b>'
 #  '<i>курсив</i>'
@@ -19,31 +18,17 @@ from loader import dp
 #  </code></pre>'''
 
 
+kb = [[KeyboardButton(text='menu')]]
+keyboard2 = ReplyKeyboardMarkup(
+    keyboard=kb,
+    resize_keyboard=True,
+    one_time_keyboard=True
+)
+
+
 @dp.message(CommandStart())
 async def cmd_start(message: Message) -> None:
     await message.answer(f'Привет, {hbold(message.from_user.full_name)}!')
-
-
-@dp.message(Command('menu'))
-async def menu_for_instruction(message: Message):
-    """
-    Меню-навигация
-    """
-    await message.answer('<b>Выбери что тебе нужно:</b> \n\n'
-                         '<u>Start:</u>\n'
-                         'Настраиваем проект /start_project1\n'
-                         'Настраиваем проект /start_project2\n'
-                         '\n'
-                         '<u>Кнопки:</u>\n'
-                         'Кнопки кликеры прям в контексте /inline_callback\n'
-                         'Что бы делать вот такие команды /call_command\n'
-                         'Кнопки с выбором вместо клавы /buttons_for_choice\n'
-                         'Как вставить картинку или гифку через url /gif_or_image\n'
-                         'запуск функции по слову /filter_text\n'
-                         '\n\n\n'
-                         '<u>Проектики мини:</u>\n'
-
-                         )
 
 
 @dp.message(Command('start_project1'))
@@ -208,14 +193,14 @@ async def cms_buttons_choice2(message: Message):
     kb = [[KeyboardButton(text='answer'),
            KeyboardButton(text='pupa')]]
 
-    keyboard2 = ReplyKeyboardMarkup(
+    keyboard3 = ReplyKeyboardMarkup(
         keyboard=kb,
         resize_keyboard=True,
         one_time_keyboard=True
     )
 
     await message.answer(text='this two variant for you, what you choice?',
-                         reply_markup=keyboard2)
+                         reply_markup=keyboard3)
 
 
 @dp.message(F.text == 'answer')
@@ -229,7 +214,7 @@ async def process_answer_pipa(message: Message):
                      text='ответ который придет в сообщение',
                      reply_markup=types.ReplyKeyboardRemove())
              </code></pre>\n\n''',
-        reply_markup=types.ReplyKeyboardRemove()
+        reply_markup=keyboard2
     )
 
 
@@ -237,7 +222,7 @@ async def process_answer_pipa(message: Message):
 async def process_answer_pupa(message: Message):
     await message.answer(
         text='Да',
-        reply_markup=types.ReplyKeyboardRemove()
+        reply_markup=keyboard2
     )
 
 
@@ -302,3 +287,21 @@ async def filter_text(message: Message):
         @dp.message(lambda x: x.text and x.text.isdigit() and 1 = int(x.text))
         @dp.message(F.text.lower().in_(['а вот сюда пишем текст на который откликается']))
         </code></pre>''')
+
+
+@dp.message()
+async def buttons_for_menu(message: Message):
+    await message.answer(text='меню''<b>Выбери что тебе нужно:</b> \n\n'
+                         '<u>Start:</u>\n'
+                         'Настраиваем проект /start_project1\n'
+                         'Настраиваем проект /start_project2\n'
+                         '\n'
+                         '<u>Кнопки:</u>\n'
+                         'Кнопки кликеры прям в контексте /inline_callback\n'
+                         'Что бы делать вот такие команды /call_command\n'
+                         'Кнопки с выбором вместо клавы /buttons_for_choice\n'
+                         'Как вставить картинку или гифку через url /gif_or_image\n'
+                         'запуск функции по слову /filter_text\n'
+                         '\n\n\n'
+                         '<u>Проектики мини:</u>\n',
+                         reply_markup=keyboard2)

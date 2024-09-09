@@ -2,7 +2,7 @@ import asyncio
 import logging
 import sys
 
-from handlers import cmd_start, menu_for_instruction
+from handlers import buttons_for_menu, cmd_start
 from loader import bot, dp
 
 
@@ -12,7 +12,7 @@ async def main() -> None:
     Запуск процесса опроса для получения обновлений.
     """
     dp.message.register(cmd_start)
-    dp.message.register(menu_for_instruction)
+    dp.message.register(buttons_for_menu)
 
     await dp.start_polling(bot)
 
