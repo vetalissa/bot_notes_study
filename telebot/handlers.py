@@ -22,7 +22,6 @@ kb = [[KeyboardButton(text='menu')]]
 keyboard2 = ReplyKeyboardMarkup(
     keyboard=kb,
     resize_keyboard=True,
-    one_time_keyboard=True
 )
 
 
@@ -126,8 +125,8 @@ async def cmd_inline_callable(message: Message):
         </code></pre>''')
 
 
-@dp.message(Command('inline_callback'))
-async def inline_callable(message: Message):
+@dp.message(Command('inline_button'))
+async def inline_button(message: Message):
     await message.answer(
         'Функция кнопки выглядит так:\n\n'
 
@@ -137,7 +136,8 @@ async def inline_callable(message: Message):
             builder = InlineKeyboardBuilder()
             builder.add(types.InlineKeyboardButton(
             text='Текст на кнопке',
-            callback_data='имя_ответа', ))\n
+            callback_data='имя_ответа', # если нужен ответ после нажатия на кнопку
+            url='ссылка, если вам нужно чтобы кнопка пере отправляла куда-то'))\n
             with suppress(TelegramBadRequest):
                 await message.answer(
                 'текст над кнопкой',
@@ -237,18 +237,55 @@ async def buttons_for_choice(message: Message):
         kb = [[KeyboardButton(text='текст на кнопке 1'),\nKeyboardButton(text='текст на кнопке 2')]]
         keyboard2 = ReplyKeyboardMarkup(
           keyboard=kb,
-          resize_keyboard=True,
-          one_time_keyboard=True
+          one_time_keyboard=True, # после нажатия кнопки свернутся
+          resize_keyboard=True # эта штука сделает их меньше
+          input_field_placeholder='этот текст будет виден в поле ввода'
         )
         await message.answer(text='текст который выйдет перед кнопкой',
                             reply_markup=keyboard2)
         </code></pre>\n\n'''
-        'пример: /buttons_choice  /buttons_choice2'
+        'пример: /buttons_choice  /buttons_choice2\n\n'
+        'Специальные кнопки с автоматическим действием /special_buttons'
+    )
+
+
+@dp.message(Command('special_buttons'))
+async def buttonss_special_move(message: Message):
+    await message.answer(
+        'Функция кнопки выглядит так:\n\n'
+
+        '''<pre> <code class='language-python'>
+            # Инициализируем билдер
+            kb_builder = ReplyKeyboardBuilder()
+
+            # Создаем кнопки
+            contact_btn = KeyboardButton(
+                text='Отправить телефон',
+                request_contact=True
+            )
+            geo_btn = KeyboardButton(
+                text='Отправить геолокацию',
+                request_location=True
+            )
+            poll_btn = KeyboardButton(
+                text='Создать опрос/викторину',
+                request_poll=KeyboardButtonPollType()
+            )
+
+            # Добавляем кнопки в билдер
+            kb_builder.row(contact_btn, geo_btn, poll_btn, width=1)
+
+            # Создаем объект клавиатуры
+            keyboard: ReplyKeyboardMarkup = kb_builder.as_markup(
+                resize_keyboard=True,
+                one_time_keyboard=True
+            )
+        </code></pre>\n\n'''
     )
 
 
 @dp.message(Command('gif_or_image'))
-async def buttonss_for_choice(message: Message):
+async def send_media_file(message: Message):
     await message.answer(
         'Функция кнопки выглядит так:\n\n'
 
@@ -281,27 +318,31 @@ async def filter_text(message: Message):
         'Декоратор пишем так, если хотим что бы наша функция'
         'отрабатывала на какие-то определенные значения в тексте;'
         'и соблюдаем порядок таких функций:\n\n'
-        'Первый декоратор проверяет, что у нас поступило число и оно равно 1\n'
-        'Второй декоратор проверяет что поступил текст, который есть в списке\n\n'
         '''<pre> <code class='language-python'>
+        # Этот хэндлер будет срабатывать на тип контента "photo"
+        @dp.message(F.photo)
+        # Этот хэндлер проверяет, что у нас поступило число и оно равно 1
         @dp.message(lambda x: x.text and x.text.isdigit() and 1 = int(x.text))
+        # Этот хэндлер проверяет что поступил текст, который есть в списке
         @dp.message(F.text.lower().in_(['а вот сюда пишем текст на который откликается']))
+        # Этот хэндлер будет срабатывать на тип контента "voice", "video" или "text"
+        @dp.message(F.content_type.in_({'voice', 'video', 'text'}))
         </code></pre>''')
 
 
 @dp.message()
 async def buttons_for_menu(message: Message):
     await message.answer(text='меню''<b>Выбери что тебе нужно:</b> \n\n'
-                         '<u>Start:</u>\n'
-                         'Настраиваем проект /start_project1\n'
-                         'Настраиваем проект /start_project2\n'
-                         '\n'
-                         '<u>Кнопки:</u>\n'
-                         'Кнопки кликеры прям в контексте /inline_callback\n'
-                         'Что бы делать вот такие команды /call_command\n'
-                         'Кнопки с выбором вместо клавы /buttons_for_choice\n'
-                         'Как вставить картинку или гифку через url /gif_or_image\n'
-                         'запуск функции по слову /filter_text\n'
-                         '\n\n\n'
-                         '<u>Проектики мини:</u>\n',
+                              '<u>Start:</u>\n'
+                              'Настраиваем проект /start_project1\n'
+                              'Настраиваем проект /start_project2\n'
+                              '\n'
+                              '<u>Кнопки:</u>\n'
+                              'Кнопки кликеры прям в контексте /inline_button\n'
+                              'Что бы делать вот такие команды /call_command\n'
+                              'Кнопки с выбором вместо клавы /buttons_for_choice\n'
+                              'Как вставить картинку или гифку через url /gif_or_image\n'
+                              'запуск функции по слову /filter_text\n'
+                              '\n\n\n'
+                              '<u>Проектики мини:</u>\n',
                          reply_markup=keyboard2)
