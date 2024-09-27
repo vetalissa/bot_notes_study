@@ -3,11 +3,14 @@ from contextlib import suppress
 from aiogram import F, types
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.filters import Command, CommandStart
-from aiogram.types import KeyboardButton, Message, ReplyKeyboardMarkup
+from aiogram.types import KeyboardButton, Message, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup, \
+    CallbackQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.utils.markdown import hbold
 
 from loader import dp
+
+import random
 
 #  '<blockquote>Цитата</blockquote>'
 # '<b>(жирный)</b>'
@@ -23,6 +26,15 @@ keyboard2 = ReplyKeyboardMarkup(
     keyboard=kb,
     resize_keyboard=True,
 )
+
+jokes: dict[int, str] = {
+    1: 'с хабра, описание фильмов Матрица\n\nСудя по всему, в городе машин либо очень либеральный мэр, либо очень криворукие сисадмины. Иначе как объяснить, что свободные люди беспрепятственно подключаются к вражеской ИТ-системе? Причем удаленно из тарантаса, летающего по канализации! Т.е. мало того, что у машин в сточных трубах развернут высокоскоростной Wi-Fi, так они еще и пускают в свою сеть всех подряд, позволяя неавторизованным пользователям получать данные из системы, вносить в нее изменения и общаться между собой. Красота!',
+    2: '- У меня на одном курсе был фин, он приехал к нам т.к. был очарован культурой гопников. Он хотел проникнуться ею у первоисточника и подтянуть мат. И вот где-то в Питере он припал к истокам, все-все выучил и загорелся желанием принести культуру другим иностранцам группы. А там были бразильцы, немцы итальянцы, французы и китаец. И вот захожу как-то я в группу и там хором повторяют слова "ъуъ" и "съка" с шестью разными акцентами.\n- Хотелось бы послушать, как они говорили "ъуъ"',
+    3: 'Я в восторге от наших учителей.\nСыну в школе дали домашнее задание, где, среди прочего, был вопрос "как связаны буква А4 и бык?"\nРассказал ему про финикийский алфавит, как первую фонетическую письменность. Что там была буква "алеф", очень похожая на нашу современную "А", и что слово "алеф" означало "бык". Что, возможно, букву так назвали, потому что если развернуть ее, то она похожа на морду быка с рогами.\nЕще очень радовался, что детям во втором классе такие вещи рассказывают.\nУчительница поставила ребенку двойку, заявив, что он фантазировал в домашнем задании. А правильный ответ: если к слову "бык" добавить "а", получится родительный падеж.\nЯ не планировал в таком раннем возрасте рассказывать сыну, что половина окружающих людей - идиоты, но, видимо, придется :-)',
+    4: 'у меня на балконе сосулька растет метровая, прямо над машиной, которая ссигналит каждую ночь. Я эту сосульку из распылителя подкармливаю.',
+    5: 'xx: Мне сейчас спам пришел "Я живу в доме напротив, вот моя ссылка *адрес ссылки*. Давай познакомимся". Я ответил, что живу напротив морга и меня пугают такие знакомства',
+    6: 'xxx: В командировке на съемной квартире нужна была марля, чтобы погладить футболку. Начал шариться по всем ящикам. Марлю не нашел, зато нашел ключ в шкафу между простынями. Вспомнил, что один ящик в этом шкафу был заперт. Попробовал открыть его найденным ключом. Открыл. Внутри нашел марлю. Не зря в квесты играл..'
+}
 
 
 @dp.message(CommandStart())
@@ -330,6 +342,187 @@ async def filter_text(message: Message):
         </code></pre>''')
 
 
+@dp.message(Command('mach_buttons_num'))
+async def filter_text(message: Message):
+    await message.answer(
+        'Функция для написания клавиатуры с большим количеством выбора кнопок с цифрами\n\n'
+        '''<pre> <code class='language-python'>
+        num_ls = [] #пустой список для генерации
+        num_buttons = [] #список кнопок
+
+        #создаем список кнопок от 1 до 99
+        for i in range(1, 100):
+            num_ls.append(KeyboardButton(text=str(i)))
+            #количество кнопок в строке будет 9
+            if not i % 9:
+                num_buttons.append(num_ls)
+                num_ls = []
+        #дополнительно добавляем еще кнопку 100
+        num_buttons.append([KeyboardButton(text='100')])
+        num_keyboard = ReplyKeyboardMarkup(
+                    keyboard=num_buttons,
+                    resize_keyboard=True)
+        </code></pre>''')
+
+
+@dp.message(Command('format_text'))
+async def format_text(message: Message):
+    await message.answer(
+        'Выбери что хочешь посмотреть:\n\n'
+        '/html - пример разметки с помощью HTML\n'
+        '/markdownv2 - пример разметки с помощью MarkdownV2\n'
+        '/noformat - пример с разметкой, но без указания параметра parse_mode')
+
+
+@dp.message(Command('html'))
+async def format_text_html(message: Message):
+    await message.answer(
+        'как работает HTML-разметка:\n\n'
+        '<b>Это жирный текст</b>   b\n'
+        '<i>Это наклонный текст</i>  i\n'
+        '<u>Это подчеркнутый текст</u>  u\n'
+        '<span class="tg-spoiler">А это спойлер</span>   span class=tg-spoiler"\n\n'
+        'Другие варианты: /markdownv2 /noformat')
+
+
+@dp.message(Command('MarkdownV2'))
+async def format_text_markdownV2(message: Message):
+    await message.answer(
+        'как работает MarkdownV2\-разметка:\n\n'
+        '*Это жирный текст*\n'
+        '_Это наклонный текст_\n'
+        '__Это подчеркнутый текст__\n'
+        '||А это спойлер||\n\n'
+        '''<pre> <code class='language-python'>
+        #'*Это жирный текст*'
+        #'_Это наклонный текст_'
+        #'__Это подчеркнутый текст__'
+        #'||А это спойлер||'
+       </code></pre>'''
+        'Другие варианты: /html /noformat')
+
+
+@dp.message(Command('noformat'))
+async def format_text_noformat(message: Message):
+    await message.answer(
+        'как отображается текст, если не указать '
+        'параметр parse_mode:\n\n'
+        '<b>Это мог бы быть жирный текст</b>\n'
+        '_Это мог бы быть наклонный текст_\n'
+        '<u>Это мог бы быть подчеркнутый текст</u>\n'
+        '||А это мог бы быть спойлер||\n\n'
+        '''<pre> <code class='language-python'>
+       #'<b>Это мог бы быть жирный текст</b> b b'
+        #'_Это мог бы быть наклонный текст_'
+        #'<u>Это мог бы быть подчеркнутый текст</u> u u'
+        #'||А это мог бы быть спойлер'
+       </code></pre>'''
+        'Другие варианты: /html /markdownv2')
+
+
+@dp.message(Command('change_message'))
+async def change_message(message: Message):
+    keyboard = [
+        [InlineKeyboardButton(text='Способ 1 генерацией другого ответа от кнопки', callback_data='change_message1')],
+        [InlineKeyboardButton(text='Способ 2 с удалением сообщения', callback_data='change_message2')],
+        [InlineKeyboardButton(text='Способ 3 с редактированием сообщения', callback_data='change_message3')],
+    ]
+    markup = InlineKeyboardMarkup(inline_keyboard=keyboard)
+    await message.answer(
+        'Есть несколько вариантов изменения сообщения:\n\n'
+        'Способ 1. Отправка нового сообщения без удаления старого\n'
+        '''<pre> <code class='language-python'>
+       @dp.callback_query(F.data == 'название_ответа')
+       async def process_more_press(callback: CallbackQuery):
+           keyboard = [[InlineKeyboardButton(text='Текст инлайн кнопки', callback_data='название_ответа')]]
+           markup = InlineKeyboardMarkup(inline_keyboard=keyboard)
+           # Отвечаем на callback, чтобы убрать часики
+           await callback.answer()
+           # Отправляем в чат новое сообщение с шуткой
+           await callback.message.answer(
+               text=Словарь_с_возможными_оттветами[random.randint(1, len(jokes))],
+               reply_markup=markup
+           )
+       </code></pre>'''
+        'Способ 2. Отправка нового сообщения с удалением старого'
+        '''<pre> <code class='language-python'>
+        @dp.callback_query(F.data == 'название_ответа')
+        async def process_more_press(callback: CallbackQuery):
+            keyboard = [[InlineKeyboardButton(text='Текст инлайн кнопки', callback_data='название_ответа')]]
+            markup = InlineKeyboardMarkup(inline_keyboard=keyboard)
+            # Удаляем сообщение, в котором была нажата кнопка
+            await callback.message.delete()
+            # Отправляем в чат новое сообщение с шуткой
+            await callback.message.answer(
+                text=Словарь_с_возможными_оттветами[random.randint(1, len(jokes))],
+                reply_markup=markup
+            )
+        </code></pre>'''
+        'Способ 3. Редактирование сообщения'
+        '''<pre> <code class='language-python'>
+        @dp.callback_query(F.data == 'название_ответа')
+        async def process_more_press(callback: CallbackQuery):
+            keyboard: = [[InlineKeyboardButton(text='Текст инлайн кнопки', callback_data='название_ответа')]]
+            markup = InlineKeyboardMarkup(inline_keyboard=keyboard)
+            # Редактируем сообщение
+            await callback.message.edit_text(
+                text=Словарь_с_возможными_оттветами[random.randint(1, len(jokes))],
+                reply_markup=markup
+)
+        </code></pre>'''
+        'Другие варианты: /html /markdownv2',
+        reply_markup=markup)
+
+
+@dp.callback_query(F.data == 'change_message1')
+async def change_message1(callback: CallbackQuery):
+    keyboard = [
+        [InlineKeyboardButton(text='Способ 1 генерацией другого ответа от кнопки', callback_data='change_message1')],
+        [InlineKeyboardButton(text='Способ 2 с удалением сообщения', callback_data='change_message2')],
+        [InlineKeyboardButton(text='Способ 3 с редактированием сообщения', callback_data='change_message3')],
+    ]
+    markup = InlineKeyboardMarkup(inline_keyboard=keyboard)
+    # Отвечаем на callback, чтобы убрать часики
+    await callback.answer()
+    # Отправляем в чат новое сообщение с шуткой
+    await callback.message.answer(
+        text=jokes[random.randint(1, len(jokes))],
+        reply_markup=markup
+    )
+
+
+@dp.callback_query(F.data == 'change_message2')
+async def change_message2(callback: CallbackQuery):
+    keyboard = [
+        [InlineKeyboardButton(text='Способ 1 генерацией другого ответа от кнопки', callback_data='change_message1')],
+        [InlineKeyboardButton(text='Способ 2 с удалением сообщения', callback_data='change_message2')],
+        [InlineKeyboardButton(text='Способ 3 с редактированием сообщения', callback_data='change_message3')],
+    ]
+    markup = InlineKeyboardMarkup(inline_keyboard=keyboard)
+    # Удаляем сообщение, в котором была нажата кнопка
+    await callback.message.delete()
+    # Отправляем в чат новое сообщение с шуткой
+    await callback.message.answer(
+        text=jokes[random.randint(1, len(jokes))],
+        reply_markup=markup
+    )
+
+
+@dp.callback_query(F.data == 'change_message3')
+async def process_more_press(callback: CallbackQuery):
+    keyboard = [
+        [InlineKeyboardButton(text='Способ 1 генерацией другого ответа от кнопки', callback_data='change_message1')],
+        [InlineKeyboardButton(text='Способ 2 с удалением сообщения', callback_data='change_message2')],
+        [InlineKeyboardButton(text='Способ 3 с редактированием сообщения', callback_data='change_message3')],
+    ]
+    markup = InlineKeyboardMarkup(inline_keyboard=keyboard)
+    # Редактируем сообщение
+    await callback.message.edit_text(
+        text=jokes[random.randint(1, len(jokes))],
+        reply_markup=markup
+    )
+
+
 @dp.message()
 async def buttons_for_menu(message: Message):
     await message.answer(text='меню''<b>Выбери что тебе нужно:</b> \n\n'
@@ -341,8 +534,11 @@ async def buttons_for_menu(message: Message):
                               'Кнопки кликеры прям в контексте /inline_button\n'
                               'Что бы делать вот такие команды /call_command\n'
                               'Кнопки с выбором вместо клавы /buttons_for_choice\n'
+                              'Кнопки с большим выбором (чисел) /mach_buttons_num\n'
                               'Как вставить картинку или гифку через url /gif_or_image\n'
                               'запуск функции по слову /filter_text\n'
+                              'Форматирование текста /format_text\n'
+                              'Изменение сообщения /change_message\n'
                               '\n\n\n'
                               '<u>Проектики мини:</u>\n',
                          reply_markup=keyboard2)
