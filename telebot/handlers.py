@@ -1,25 +1,16 @@
+import random
 from contextlib import suppress
 
 from aiogram import F, types
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.filters import Command, CommandStart
-from aiogram.types import KeyboardButton, Message, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup, \
-    CallbackQuery
+from aiogram.types import (CallbackQuery, InlineKeyboardButton,
+                           InlineKeyboardMarkup, KeyboardButton, Message,
+                           ReplyKeyboardMarkup)
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.utils.markdown import hbold
 
 from loader import dp
-
-import random
-
-#  '<blockquote>Цитата</blockquote>'
-# '<b>(жирный)</b>'
-#  '<i>курсив</i>'
-#  '<u>подчеркивание</u>'
-#  '''<pre><code class='language-python'>
-#     сюда пишем код
-#  </code></pre>'''
-
 
 kb = [[KeyboardButton(text='menu')]]
 keyboard2 = ReplyKeyboardMarkup(
