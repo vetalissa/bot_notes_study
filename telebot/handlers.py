@@ -523,6 +523,8 @@ async def buttons_for_menu(message: Message):
                               'Что бы делать вот такие команды /call_command\n'
                               'Кнопки с выбором вместо клавы /buttons_for_choice\n'
                               'Кнопки с большим выбором (чисел) /mach_buttons_num\n'
+                              
+                              '<u>Другое:</u>\n'
                               'Как вставить картинку или гифку через url /gif_or_image\n'
                               'запуск функции по слову /filter_text\n'
                               'Форматирование текста /format_text\n'
