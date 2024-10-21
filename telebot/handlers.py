@@ -147,15 +147,7 @@ async def inline_button(message: Message):
                 reply_markup=builder.as_markup())
         </code></pre>\n\n'''
 
-        'Функция ответа выглядит так:\n\n'
-
-        '''<pre> <code class='language-python'>
-        @dp.callback_query(F.data == 'имя ответа')
-        async def имя_функции_ответа(callback: types.CallbackQuery):
-            await callback.message.answer(вот сюда пишем, что вернется после нажатия на кнопку)
-            await callback.answer()
-        </code></pre>'''
-        'Пример: /test_inline_callback'
+        'Пример+функция ответа: /test_inline_callback'
     )
 
 
@@ -173,7 +165,16 @@ async def cmd_test(message: Message):
 
 @dp.callback_query(F.data == 'test_answer')
 async def cmd_test_answer(callback: types.CallbackQuery):
-    await callback.message.answer('Тут мы получаем какой-то ответ')
+    await callback.message.answer(
+        'Функция ответа выглядит так:\n\n'
+
+        '''<pre> <code class='language-python'>
+        @dp.callback_query(F.data == 'имя ответа')
+        async def имя_функции_ответа(callback: types.CallbackQuery):
+            await callback.message.answer(вот сюда пишем, что вернется после нажатия на кнопку)
+            await callback.answer()
+        </code></pre>'''
+    )
     await callback.answer()
 
 
@@ -186,15 +187,9 @@ keyboard = ReplyKeyboardMarkup(keyboard=[[button1, button2]],
 
 
 @dp.message(Command('buttons_choice'))
-async def cmd_buttons_choice(message: Message):
-    await message.answer(text='Чего кошки боятся больше?',
-                         reply_markup=keyboard)
-
-
-@dp.message(Command('buttons_choice2'))
-async def cms_buttons_choice2(message: Message):
-    kb = [[KeyboardButton(text='answer'),
-           KeyboardButton(text='pupa')]]
+async def cms_buttons_choice(message: Message):
+    kb = [[KeyboardButton(text='Тут ответ'),
+           KeyboardButton(text='Тут ничего нет')]]
 
     keyboard3 = ReplyKeyboardMarkup(
         keyboard=kb,
@@ -202,11 +197,11 @@ async def cms_buttons_choice2(message: Message):
         one_time_keyboard=True
     )
 
-    await message.answer(text='this two variant for you, what you choice?',
+    await message.answer(text='нажми на кнопку, чтобы увидеть ответ на нажатие кнопки:',
                          reply_markup=keyboard3)
 
 
-@dp.message(F.text == 'answer')
+@dp.message(F.text == 'Тут ответ')
 async def process_answer_pipa(message: Message):
     await message.answer(
         text='Вот так выглядит ответ на нажатие на кнопку :\n\n'
@@ -247,7 +242,7 @@ async def buttons_for_choice(message: Message):
         await message.answer(text='текст который выйдет перед кнопкой',
                             reply_markup=keyboard2)
         </code></pre>\n\n'''
-        'пример: /buttons_choice  /buttons_choice2\n\n'
+        'пример+функция ответа: /buttons_choice \n\n'
         'Специальные кнопки с автоматическим действием /special_buttons'
     )
 
@@ -310,17 +305,19 @@ async def send_media_file(message: Message):
                     await message.bot(SendPhoto(chat_id=message.chat.id, photo=cat_link))
 
         except TypeError:
-            await message.answer('Технические шоколадки!')
-        </code></pre>\n\n'''
+            await message.answer('Ошибка')
+        </code></pre>\n\n''',
+        reply_markup=keyboard2
     )
 
 
 @dp.message(Command('filter_text'))
 async def filter_text(message: Message):
     await message.answer(
-        'Декоратор пишем так, если хотим что бы наша функция'
-        'отрабатывала на какие-то определенные значения в тексте;'
+        'Декоратор пишем так, если хотим что бы наша функция\n'
+        'отрабатывала на какие-то определенные значения в тексте;\n'
         'и соблюдаем порядок таких функций:\n\n'
+
         '''<pre> <code class='language-python'>
         # Этот хэндлер будет срабатывать на тип контента "photo"
         @dp.message(F.photo)
@@ -376,8 +373,8 @@ async def format_text_html(message: Message):
         'Другие варианты: /markdownv2 /noformat')
 
 
-@dp.message(Command('MarkdownV2'))
-async def format_text_markdownV2(message: Message):
+@dp.message(Command('markdownv2'))
+async def format_text_markdownv2(message: Message):
     await message.answer(
         'как работает MarkdownV2\-разметка:\n\n'
         '*Это жирный текст*\n'
@@ -530,6 +527,5 @@ async def buttons_for_menu(message: Message):
                               'запуск функции по слову /filter_text\n'
                               'Форматирование текста /format_text\n'
                               'Изменение сообщения /change_message\n'
-                              '\n\n\n'
-                              '<u>Проектики мини:</u>\n',
+                              '\n\n\n',
                          reply_markup=keyboard2)
